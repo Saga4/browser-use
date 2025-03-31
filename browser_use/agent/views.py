@@ -220,6 +220,8 @@ class AgentHistoryList(BaseModel):
 
 	def input_token_usage(self) -> list[int]:
 		"""Get token usage for each step"""
+		if not self.history:
+			return []
 		return [h.metadata.input_tokens for h in self.history if h.metadata]
 
 	def __str__(self) -> str:
@@ -360,12 +362,20 @@ class AgentHistoryList(BaseModel):
 		"""Get all model actions from history as JSON"""
 		if include is None:
 			include = []
-		outputs = self.model_actions()
+
+		# Create a set for faster membership testing if include is non-empty
+		include_set = set(include) if include else None
 		result = []
-		for o in outputs:
-			for i in include:
-				if i == list(o.keys())[0]:
-					result.append(o)
+
+		for h in self.history:
+			if h.model_output:
+				for action, interacted_element in zip(h.model_output.action, h.state.interacted_element):
+					key = list(action.model_dump(exclude_none=True).keys())[0]
+					if include_set is None or key in include_set:
+						output = action.model_dump(exclude_none=True)
+						output['interacted_element'] = interacted_element
+						result.append(output)
+
 		return result
 
 	def number_of_steps(self) -> int:
