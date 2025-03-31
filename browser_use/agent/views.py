@@ -220,6 +220,8 @@ class AgentHistoryList(BaseModel):
 
 	def input_token_usage(self) -> list[int]:
 		"""Get token usage for each step"""
+		if not self.history:
+			return []
 		return [h.metadata.input_tokens for h in self.history if h.metadata]
 
 	def __str__(self) -> str:
@@ -281,8 +283,11 @@ class AgentHistoryList(BaseModel):
 
 	def final_result(self) -> None | str:
 		"""Final result from history"""
-		if self.history and self.history[-1].result[-1].extracted_content:
-			return self.history[-1].result[-1].extracted_content
+		# Optimize by reducing the nested indexing
+		if self.history:
+			final_result = self.history[-1].result
+			if final_result:
+				return final_result[-1].extracted_content or None
 		return None
 
 	def is_done(self) -> bool:
