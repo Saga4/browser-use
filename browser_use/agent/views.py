@@ -220,6 +220,8 @@ class AgentHistoryList(BaseModel):
 
 	def input_token_usage(self) -> list[int]:
 		"""Get token usage for each step"""
+		if not self.history:
+			return []
 		return [h.metadata.input_tokens for h in self.history if h.metadata]
 
 	def __str__(self) -> str:
@@ -273,10 +275,8 @@ class AgentHistoryList(BaseModel):
 		"""Get all errors from history, with None for steps without errors"""
 		errors = []
 		for h in self.history:
-			step_errors = [r.error for r in h.result if r.error]
-
-			# each step can have only one error
-			errors.append(step_errors[0] if step_errors else None)
+			step_error = next((r.error for r in h.result if r.error), None)
+			errors.append(step_error)
 		return errors
 
 	def final_result(self) -> None | str:
