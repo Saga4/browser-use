@@ -1,4 +1,5 @@
 import hashlib
+from functools import lru_cache
 from typing import Optional
 
 from browser_use.dom.history_tree_processor.view import DOMHistoryElement, HashedDomElement
@@ -97,6 +98,7 @@ class HistoryTreeProcessor:
 		return hashlib.sha256(attributes_string.encode()).hexdigest()
 
 	@staticmethod
+	@lru_cache(maxsize=None)
 	def _xpath_hash(xpath: str) -> str:
 		return hashlib.sha256(xpath.encode()).hexdigest()
 
