@@ -220,6 +220,8 @@ class AgentHistoryList(BaseModel):
 
 	def input_token_usage(self) -> list[int]:
 		"""Get token usage for each step"""
+		if not self.history:
+			return []
 		return [h.metadata.input_tokens for h in self.history if h.metadata]
 
 	def __str__(self) -> str:
@@ -265,8 +267,10 @@ class AgentHistoryList(BaseModel):
 
 	def last_action(self) -> None | dict:
 		"""Last action in history"""
-		if self.history and self.history[-1].model_output:
-			return self.history[-1].model_output.action[-1].model_dump(exclude_none=True)
+		if self.history:
+			last_action = self.history[-1].model_output
+			if last_action and last_action.action:
+				return last_action.action[-1].model_dump(exclude_none=True)
 		return None
 
 	def errors(self) -> list[str | None]:
