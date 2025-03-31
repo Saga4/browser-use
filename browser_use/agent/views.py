@@ -220,6 +220,8 @@ class AgentHistoryList(BaseModel):
 
 	def input_token_usage(self) -> list[int]:
 		"""Get token usage for each step"""
+		if not self.history:
+			return []
 		return [h.metadata.input_tokens for h in self.history if h.metadata]
 
 	def __str__(self) -> str:
@@ -306,7 +308,10 @@ class AgentHistoryList(BaseModel):
 
 	def urls(self) -> list[str | None]:
 		"""Get all unique URLs from history"""
-		return [h.state.url if h.state.url is not None else None for h in self.history]
+		result = []
+		for h in self.history:
+			result.append(h.state.url if h.state.url is not None else None)
+		return result
 
 	def screenshots(self) -> list[str | None]:
 		"""Get all screenshots from history"""
