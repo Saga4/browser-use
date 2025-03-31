@@ -220,7 +220,10 @@ class AgentHistoryList(BaseModel):
 
 	def input_token_usage(self) -> list[int]:
 		"""Get token usage for each step"""
-		return [h.metadata.input_tokens for h in self.history if h.metadata]
+		history = self.history  # Cache self.history to local variable
+		if not history:
+			return []
+		return [h.metadata.input_tokens for h in history if h.metadata]
 
 	def __str__(self) -> str:
 		"""Representation of the AgentHistoryList object"""
