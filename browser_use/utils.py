@@ -15,9 +15,9 @@ def time_execution_sync(additional_text: str = '') -> Callable[[Callable[P, R]],
 	def decorator(func: Callable[P, R]) -> Callable[P, R]:
 		@wraps(func)
 		def wrapper(*args: P.args, **kwargs: P.kwargs) -> R:
-			start_time = time.time()
+			start_time = time.perf_counter()  # More precise timing
 			result = func(*args, **kwargs)
-			execution_time = time.time() - start_time
+			execution_time = time.perf_counter() - start_time
 			logger.debug(f'{additional_text} Execution time: {execution_time:.2f} seconds')
 			return result
 
