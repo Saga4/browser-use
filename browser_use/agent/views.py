@@ -220,6 +220,8 @@ class AgentHistoryList(BaseModel):
 
 	def input_token_usage(self) -> list[int]:
 		"""Get token usage for each step"""
+		if not self.history:
+			return []
 		return [h.metadata.input_tokens for h in self.history if h.metadata]
 
 	def __str__(self) -> str:
@@ -323,7 +325,8 @@ class AgentHistoryList(BaseModel):
 
 	def model_thoughts(self) -> list[AgentBrain]:
 		"""Get all thoughts from history"""
-		return [h.model_output.current_state for h in self.history if h.model_output]
+		# List comprehension that filters and extracts model_thoughts efficiently.
+		return [history_item.model_output.current_state for history_item in self.history if history_item.model_output]
 
 	def model_outputs(self) -> list[AgentOutput]:
 		"""Get all model outputs from history"""
