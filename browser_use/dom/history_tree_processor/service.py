@@ -76,15 +76,13 @@ class HistoryTreeProcessor:
 
 	@staticmethod
 	def _get_parent_branch_path(dom_element: DOMElementNode) -> list[str]:
-		parents: list[DOMElementNode] = []
+		parents: list[str] = []
 		current_element: DOMElementNode = dom_element
 		while current_element.parent is not None:
-			parents.append(current_element)
+			parents.append(current_element.tag_name)
 			current_element = current_element.parent
 
-		parents.reverse()
-
-		return [parent.tag_name for parent in parents]
+		return parents
 
 	@staticmethod
 	def _parent_branch_path_hash(parent_branch_path: list[str]) -> str:
