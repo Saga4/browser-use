@@ -220,6 +220,8 @@ class AgentHistoryList(BaseModel):
 
 	def input_token_usage(self) -> list[int]:
 		"""Get token usage for each step"""
+		if not self.history:
+			return []
 		return [h.metadata.input_tokens for h in self.history if h.metadata]
 
 	def __str__(self) -> str:
@@ -370,7 +372,11 @@ class AgentHistoryList(BaseModel):
 
 	def number_of_steps(self) -> int:
 		"""Get the number of steps in the history"""
-		return len(self.history)
+		return self._history_len
+
+	def __init__(self, **kwargs):
+		super().__init__(**kwargs)
+		self._history_len = len(self.history)
 
 
 class AgentError:
