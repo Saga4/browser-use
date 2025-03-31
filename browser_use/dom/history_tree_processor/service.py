@@ -93,7 +93,8 @@ class HistoryTreeProcessor:
 
 	@staticmethod
 	def _attributes_hash(attributes: dict[str, str]) -> str:
-		attributes_string = ''.join(f'{key}={value}' for key, value in attributes.items())
+		# Using a list comprehension and join outside the loop for better performance
+		attributes_string = ''.join([f'{key}={value}' for key, value in attributes.items()])
 		return hashlib.sha256(attributes_string.encode()).hexdigest()
 
 	@staticmethod
